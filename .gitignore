@@ -1,3 +1,16 @@
+DS_Store
+*/.DS_Store
+
+# compile file
+.idea/
+*/.idea/
+*.iml
+**/*.iml
+.project
+.classpath
+.wtpmodules
+.settings
+
 target/
 pom.xml.tag
 pom.xml.releaseBackup
