@@ -6,12 +6,6 @@ import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.flink.table.api.bridge.scala.StreamTableEnvironment
 
 object Kafka2HBase {
-  val PRINT_SINK_SQL =
-    """
-      |CREATE TABLE print_table (
-      | text STRING
-      | ) WITH ('connector' = 'print')
-      |""".stripMargin
   val HBASE_SINK =
     """
       |CREATE TABLE hbase1 (
@@ -20,7 +14,7 @@ object Kafka2HBase {
       | PRIMARY KEY (rowkey) NOT ENFORCED
       |) WITH ( 'connector' = 'hbase-1.4',
       | 'table-name' = 'mytable',
-      | 'zookeeper.quorum' = 'sdp-10-88-100-154:2181,sdp-10-88-100-155:2181,sdp-10-88-100-156:2181'
+      | 'zookeeper.quorum' = 'sdp-10-88-100-154:2181,sdp-10-88-100-155:2181,sdp-10-88-100-156:2181',
       | 'zookeeper.znode.parent' = '/hbase_unsecure'
       | )
       |""".stripMargin
@@ -54,19 +48,17 @@ object Kafka2HBase {
       |""".stripMargin
 
   def main(args: Array[String]) {
-
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     //    val env = Util.localEnv
     val tableEnv = StreamTableEnvironment.create(env)
-    tableEnv.executeSql(PRINT_SINK_SQL)
-    //    tableEnv.executeSql(HBASE_SINK)
+    tableEnv.executeSql(HBASE_SINK)
     tableEnv.executeSql(KAFKA_SOURCE)
-    tableEnv.executeSql(FS_SINK)
+    //    tableEnv.executeSql(FS_SINK)
 
     //  TODO ERROR  kafkaTable.select($"text".as("rowkey"), $"ROW(text)")
     //        .executeInsert("print_table")
-//    val tableResult1 = tableEnv.executeSql("insert into print_table select text from topic1")
-//    val tableResult1 = tableEnv.executeSql("insert into hdfs_table select text as content, 'a' as dt, 'b' as h from topic1")
+    //    val tableResult1 = tableEnv.executeSql("insert into print_table select text from topic1")
+    //    val tableResult1 = tableEnv.executeSql("insert into hdfs_table select text as content, 'a' as dt, 'b' as h from topic1")
     val tableResult1 = tableEnv.executeSql("insert into hbase1 select msg as rowkey, ROW(msg) as cf from kafka1")
   }
 
