@@ -23,7 +23,10 @@ object Kafka2Console {
       |'properties.group.id' = 'leongu_test',
       |'properties.security.protocol' = 'SASL_SDP',
       |'properties.sasl.mechanism' = 'SDP',
+      |'properties.kafka.security.authentication.sdp.publickey' = 'yzMVgK2iWzctULWGvrYRSyFYTFVqd6p5ppoo',
+      |'properties.kafka.security.authentication.sdp.privatekey' = 'SE1AbMLVg0QUq7cCvlDNvLtC421iKxij',
       |'format' = 'csv',
+      |'csv.ignore-parse-errors' = 'true',
       |'scan.startup.mode' = 'earliest-offset')
       |""".stripMargin
 

@@ -22,6 +22,7 @@ object Kafka2Console2 {
       |'properties.security.protocol' = 'SASL_SDP',
       |'properties.sasl.mechanism' = 'SDP',
       |'format' = 'csv',
+      |'csv.ignore-parse-errors' = 'true',
       |'scan.startup.mode' = 'earliest-offset')
       |""".stripMargin
 

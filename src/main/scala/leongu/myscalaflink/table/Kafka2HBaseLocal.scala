@@ -29,6 +29,7 @@ object Kafka2HBaseLocal {
       |'properties.key.deserializer' = 'org.apache.kafka.common.serialization.LongDeserializer',
       |'properties.value.deserializer' = 'org.apache.kafka.common.serialization.StringDeserializer',
       |'format' = 'csv',
+      |'csv.ignore-parse-errors' = 'true',
       |'scan.startup.mode' = 'earliest-offset')
       |""".stripMargin
 
