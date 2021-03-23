@@ -1,9 +1,13 @@
 package leongu.myscalaflink.table
 
+import leongu.myscalaflink.util.Utils
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.flink.table.api.bridge.scala.StreamTableEnvironment
 
-object Kafka2Kafka {
+/**
+ * TODO CSV Format cannot handle dirty data
+ */
+object Kafka2KafkaLocal2 {
   val PRINT_SINK_SQL =
     """
       |CREATE TABLE print_table (
@@ -25,16 +29,12 @@ object Kafka2Kafka {
       | ) WITH (
       |'connector' = 'kafka-0.10',
       |'topic' = 'topic1',
-      |'properties.bootstrap.servers' = '10.88.100.154:6668,10.88.100.155:6668,10.88.100.156:6668',
-      |'properties.group.id' = 'leongu_test',
-      |'properties.security.protocol' = 'SASL_SDP',
-      |'properties.sasl.mechanism' = 'SDP',
-      |'properties.kafka.security.authentication.sdp.publickey' = 'yzMVgK2iWzctULWGvrYRSyFYTFVqd6p5ppoo',
-      |'properties.kafka.security.authentication.sdp.privatekey' = 'SE1AbMLVg0QUq7cCvlDNvLtC421iKxij',
+      |'properties.bootstrap.servers' = 'localhost:9092',
+      |'properties.group.id' = 'leongu_test2',
       |'scan.startup.mode' = 'earliest-offset',
-      |'format' = 'json',
-      |'json.ignore-parse-errors' = 'true',
-      |'json.fail-on-missing-field' = 'false')
+      |'format' = 'csv',
+      |'csv.ignore-parse-errors' = 'true',
+      |'csv.allow-comments' = 'true')
       |""".stripMargin
   val KAFKA_SINK =
     """
@@ -46,31 +46,28 @@ object Kafka2Kafka {
       | ) WITH (
       |'connector' = 'kafka-0.10',
       |'topic' = 'topic2',
-      |'properties.bootstrap.servers' = '10.88.100.154:6668,10.88.100.155:6668,10.88.100.156:6668',
+      |'properties.bootstrap.servers' = 'localhost:9092',
       |'properties.group.id' = 'leongu_test',
-      |'properties.security.protocol' = 'SASL_SDP',
-      |'properties.sasl.mechanism' = 'SDP',
-      |'properties.kafka.security.authentication.sdp.publickey' = 'yzMVgK2iWzctULWGvrYRSyFYTFVqd6p5ppoo',
-      |'properties.kafka.security.authentication.sdp.privatekey' = 'SE1AbMLVg0QUq7cCvlDNvLtC421iKxij',
-      |'scan.startup.mode' = 'earliest-offset'
+      |'scan.startup.mode' = 'earliest-offset',
       |'format' = 'csv',
-      |'csv.ignore-parse-errors' = 'true')
+      |'csv.ignore-parse-errors' = 'true',
+      |'csv.allow-comments' = 'true')
       |""".stripMargin
 
   val SQL =
     """
       | INSERT INTO kafka2 SELECT
-      |   TUMBLE_START(log_time, INTERVAL '30' SECOND) as window_start,
-      |   TUMBLE_END(log_time, INTERVAL '30' SECOND) as window_end,
+      |   TUMBLE_START(row1_time, INTERVAL '30' SECOND) as window_start,
+      |   TUMBLE_END(row1_time, INTERVAL '30' SECOND) as window_end,
       |   COUNT(id) as cnt,
       |   gender
       |   FROM kafka1
-      |   GROUP BY TUMBLE(log_time, INTERVAL '30' SECOND), gender
+      |   GROUP BY TUMBLE(row1_time, INTERVAL '30' SECOND), gender
       |""".stripMargin
 
   def main(args: Array[String]) {
-    val env = StreamExecutionEnvironment.getExecutionEnvironment
-//        val env = Utils.localEnv
+        val env = StreamExecutionEnvironment.getExecutionEnvironment
+//    val env = Utils.localEnv
     val tableEnv = StreamTableEnvironment.create(env)
     //    tableEnv.executeSql(HBASE_SINK)
     tableEnv.executeSql(KAFKA_SOURCE)

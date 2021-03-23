@@ -132,6 +132,20 @@ under the License.
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- flink format -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-json</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+		<!-- add for IDE local UI-->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-runtime-web_2.11</artifactId>
+			<version>${flink.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<!-- kafka -->
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
