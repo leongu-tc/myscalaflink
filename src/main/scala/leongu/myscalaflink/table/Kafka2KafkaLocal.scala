@@ -1,6 +1,7 @@
 package leongu.myscalaflink.table
 
 import leongu.myscalaflink.util.Utils
+import org.apache.flink.streaming.api.CheckpointingMode
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.flink.table.api.bridge.scala.StreamTableEnvironment
 
@@ -32,7 +33,11 @@ object Kafka2KafkaLocal {
       |""".stripMargin
 
   def main(args: Array[String]) {
-        val env = StreamExecutionEnvironment.getExecutionEnvironment
+    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    env.getCheckpointConfig.setCheckpointInterval(60000)
+    env.getCheckpointConfig.setMaxConcurrentCheckpoints(3)
+    env.getCheckpointConfig.setMinPauseBetweenCheckpoints(60000)
+    env.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE)
 //    val env = Utils.localEnv
     val tableEnv = StreamTableEnvironment.create(env)
     tableEnv.executeSql(KAFKA_SOURCE)

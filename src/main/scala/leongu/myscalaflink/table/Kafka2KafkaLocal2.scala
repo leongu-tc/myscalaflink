@@ -1,6 +1,7 @@
 package leongu.myscalaflink.table
 
 import leongu.myscalaflink.util.Utils
+import org.apache.flink.streaming.api.CheckpointingMode
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.flink.table.api.bridge.scala.StreamTableEnvironment
 
@@ -24,7 +25,7 @@ object Kafka2KafkaLocal2 {
       | age INT,
       | address VARCHAR,
       | log_time TIMESTAMP,
-      | row1_time AS COALESCE(log_time, to_timestamp('1970-01-01 00:00:00:0')),
+      | row1_time AS COALESCE(log_time, to_timestamp('1970-01-01 00:00:00.0')),
       | WATERMARK FOR row1_time AS row1_time - INTERVAL '1' SECOND
       | ) WITH (
       |'connector' = 'kafka-0.10',
@@ -67,6 +68,10 @@ object Kafka2KafkaLocal2 {
 
   def main(args: Array[String]) {
         val env = StreamExecutionEnvironment.getExecutionEnvironment
+    env.getCheckpointConfig.setCheckpointInterval(60000)
+    env.getCheckpointConfig.setMaxConcurrentCheckpoints(3)
+    env.getCheckpointConfig.setMinPauseBetweenCheckpoints(60000)
+    env.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE)
 //    val env = Utils.localEnv
     val tableEnv = StreamTableEnvironment.create(env)
     //    tableEnv.executeSql(HBASE_SINK)
