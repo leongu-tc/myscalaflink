@@ -11,6 +11,9 @@ DS_Store
 .wtpmodules
 .settings
 
+# business
+src/main/resources/business/
+
 target/
 pom.xml.tag
 pom.xml.releaseBackup
