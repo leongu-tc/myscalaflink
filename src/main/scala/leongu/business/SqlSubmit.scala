@@ -35,16 +35,16 @@ object SqlSubmit {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
 
     if (conf.contains(Utils.CP_INTERVAL)) {
-      env.getCheckpointConfig.setCheckpointInterval(conf.getOrElse[Long](Utils.CP_INTERVAL, 180000))
+      env.getCheckpointConfig.setCheckpointInterval(conf.getOrElse(Utils.CP_INTERVAL, 180000).toString.toLong)
     }
     if (conf.contains(Utils.MAX_CURR_CP)) {
-      env.getCheckpointConfig.setMaxConcurrentCheckpoints(conf.getOrElse[Integer](Utils.MAX_CURR_CP, 3))
+      env.getCheckpointConfig.setMaxConcurrentCheckpoints(conf.getOrElse(Utils.MAX_CURR_CP, 3).toString.toInt)
     }
     if (conf.contains(Utils.MIN_PAUSE_CP)) {
-      env.getCheckpointConfig.setMinPauseBetweenCheckpoints(conf.getOrElse[Long](Utils.MIN_PAUSE_CP, 60000))
+      env.getCheckpointConfig.setMinPauseBetweenCheckpoints(conf.getOrElse(Utils.MIN_PAUSE_CP, 60000).toString.toLong)
     }
     if (conf.contains(Utils.CP_MODE)) {
-      env.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.valueOf(conf.getOrElse[String](Utils.CP_MODE, Utils.ALOS.name())));
+      env.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.valueOf(conf.getOrElse(Utils.CP_MODE, Utils.ALOS.name()).toString));
     }
     //    val env = Util.localEnv
     val tableEnv = StreamTableEnvironment.create(env)
