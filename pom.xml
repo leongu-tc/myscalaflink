@@ -53,6 +53,8 @@ under the License.
 		<hbase.version>1.2.1-SDP</hbase.version>
 		<metrics-core.version>2.2.0</metrics-core.version>
 		<htrace.version>3.1.0-incubating</htrace.version>
+		<mysql.version>6.0.6</mysql.version>
+		<guava.version>12.0.1</guava.version>
 	</properties>
 
 	<dependencies>
@@ -132,6 +134,18 @@ under the License.
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- flink connector jdbc start -->
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-connector-jdbc_${scala.binary.version}</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.version}</version>
+		</dependency>
+		<!-- flink connector jdbc start -->
 		<!-- flink connector redis start -->
 		<dependency>
 			<groupId>com.cgws.flink</groupId>
@@ -139,12 +153,6 @@ under the License.
 			<version>${flink.version}</version>
 		</dependency>
 		<!-- flink connector redis start -->
-		<!-- flink format -->
-		<dependency>
-			<groupId>org.apache.flink</groupId>
-			<artifactId>flink-json</artifactId>
-			<version>${flink.version}</version>
-		</dependency>
 		<!-- add for IDE local UI-->
 		<dependency>
 			<groupId>org.apache.flink</groupId>
@@ -164,6 +172,12 @@ under the License.
 			<groupId>org.apache.hbase</groupId>
 			<artifactId>hbase-client</artifactId>
 			<version>${hbase.version}</version>
+			<exclusions>
+			   <exclusion>
+				   <groupId>com.sun.jersey</groupId>
+				   <artifactId>jersey-client</artifactId>
+			   </exclusion>
+		   </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.hbase</groupId>
@@ -179,6 +193,16 @@ under the License.
 			<groupId>org.apache.hbase</groupId>
 			<artifactId>hbase-server</artifactId>
 			<version>${hbase.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun.jersey</groupId>
+					<artifactId>jersey-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jersey</groupId>
+					<artifactId>jersey-server</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.hbase</groupId>
@@ -199,6 +223,11 @@ under the License.
 			<groupId>com.yammer.metrics</groupId>
 			<artifactId>metrics-core</artifactId>
 			<version>${metrics-core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${guava.version}</version>
 		</dependency>
 		<!-- Add logging framework, to produce console output when running in the IDE. -->
 		<!-- These dependencies are excluded from the application JAR by default. -->

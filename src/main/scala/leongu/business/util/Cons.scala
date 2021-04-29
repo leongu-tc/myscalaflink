@@ -35,7 +35,7 @@ trait Cons {
   // cons
   val HALF_DAY = 12 * 3600 * 1000
   val HBASE_CF = "cf"
-  val HBASE_CF_BYTES = Bytes.toBytes(HBASE_CF)
+  // val HBASE_CF_BYTES = Bytes.toBytes(HBASE_CF)
 
   val pDecimal = "(decimal.*)".r
 

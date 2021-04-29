@@ -1,12 +1,12 @@
 package leongu.business
 
-import leongu.business.util.Utils
+import leongu.business.util.{SqlUtils, Utils}
 import org.apache.commons.lang3.StringUtils
 import org.apache.flink.api.java.utils.ParameterTool
 import org.apache.flink.streaming.api.CheckpointingMode
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.flink.table.api.bridge.scala.StreamTableEnvironment
-
+import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 object SqlSubmit {
@@ -14,21 +14,21 @@ object SqlSubmit {
 
   def main(args: Array[String]): Unit = {
     val parameterTool = ParameterTool.fromArgs(args)
-    var sql = parameterTool.get("sql")
+    var script = parameterTool.get("script")
     val confFile = parameterTool.get("conf")
     val sqlFile = parameterTool.get("sqlfile")
-    if (StringUtils.isEmpty(sql) && StringUtils.isEmpty(sqlFile)) {
-      throw new Exception("args: --sql and --sqlfile cannot be both empty!")
-    } else if (!StringUtils.isEmpty(sql) && !StringUtils.isEmpty(sqlFile)) {
-      throw new Exception("args: --sql and --sqlfile cannot be both valued!")
+    if (StringUtils.isEmpty(script) && StringUtils.isEmpty(sqlFile)) {
+      throw new Exception("args: --script and --sqlfile cannot be both empty!")
+    } else if (!StringUtils.isEmpty(script) && !StringUtils.isEmpty(sqlFile)) {
+      throw new Exception("args: --script and --sqlfile cannot be both valued!")
     } else if (!StringUtils.isEmpty(sqlFile)) {
-      sql = Utils.readSql(sqlFile)
+      script = Utils.readSql(sqlFile)
     }
 
     if (!StringUtils.isEmpty(confFile)) {
       conf = Utils.readConfFromResources(confFile)
-      if (StringUtils.isBlank(sql)) {
-        sql = conf.getOrElse(Utils.QUERY, "").toString
+      if (StringUtils.isBlank(script)) {
+        script = conf.getOrElse(Utils.QUERY, "").toString
       }
     }
 
@@ -48,6 +48,12 @@ object SqlSubmit {
     }
     //    val env = Util.localEnv
     val tableEnv = StreamTableEnvironment.create(env)
-    tableEnv.executeSql(sql)
+
+    SqlUtils.readSqlsFromText(script).asScala.foreach(sql => {
+      printf("===============")
+      printf(sql)
+      tableEnv.executeSql(sql)
+    })
+
   }
 }
