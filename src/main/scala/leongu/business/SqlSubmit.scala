@@ -5,7 +5,9 @@ import org.apache.commons.lang3.StringUtils
 import org.apache.flink.api.java.utils.ParameterTool
 import org.apache.flink.streaming.api.CheckpointingMode
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
+import org.apache.flink.table.api.StatementSet
 import org.apache.flink.table.api.bridge.scala.StreamTableEnvironment
+
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
@@ -48,12 +50,25 @@ object SqlSubmit {
     }
     //    val env = Util.localEnv
     val tableEnv = StreamTableEnvironment.create(env)
-
+    var stmtSet: StatementSet = null
+    tableEnv.createStatementSet()
     SqlUtils.readSqlsFromText(script).asScala.foreach(sql => {
       printf("===============")
       printf(sql)
-      tableEnv.executeSql(sql)
+      if (sql.trim.toUpperCase().startsWith("INSERT ")) {
+        if (stmtSet == null) {
+          stmtSet = tableEnv.createStatementSet()
+        }
+        stmtSet.addInsertSql(sql)
+      } else {
+        tableEnv.executeSql(sql)
+      }
     })
 
+    if (stmtSet != null) {
+      val insertResult = stmtSet.execute()
+      printf("INSERT RESULT ===============")
+      println(insertResult.getJobClient().get().getJobStatus())
+    }
   }
 }
